@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home</title>
+    <link rel="stylesheet" href="../static/css/home.css" />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.15.3/css/all.css"
+      integrity="sha384-SZXxX4whJ79/gErwcOYf+zWLeJdY/qpuqC4cAa9rOGUstPomtqpuNWT9wdPEn2fk"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <div class="navbar">
+      <a href="/home" style="margin-left: 5%">Home</a>
+      <a onclick="obj.renderByTestIdOrNone()">All Questions</a>
+      <div class="dropdown">
+        <button class="dropbtn">
+          Test-wise
+          <i class="fa fa-caret-down"></i>
+        </button>
+        <div class="dropdown-content" id="test-wise"></div>
+      </div>
+      <div class="dropdown">
+        <button class="dropbtn">
+          Subject-wise
+          <i class="fa fa-caret-down"></i>
+        </button>
+        <div class="dropdown-content" id="subject-wise"></div>
+      </div>
+      <div class="dropdown">
+        <button class="dropbtn">
+          Gate Year-wise
+          <i class="fa fa-caret-down"></i>
+        </button>
+        <div class="dropdown-content" id="year-wise"></div>
+      </div>
+      <div class="dropdown" style="float: right; margin-right: 5%">
+        <button class="dropbtn">
+          Hi! {{ email }}
+          <i class="fa fa-caret-down"></i>
+        </button>
+        <div class="dropdown-content">
+          <a href="/profile">Profile</a>
+          <a href="/logout">Logout</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-container">
+      <div class="test-container" id="test">
+        <div id="test-form">
+          <div id="form-header">
+            <h1 id="test-head"></h1>
+          </div>
+          <div id="test-questions"></div>
+        </div>
+        <div id="test-timer">
+          <div class="base-timer">
+            <svg
+              class="base-timer__svg"
+              viewBox="0 0 100 100"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g class="base-timer__circle">
+                <circle
+                  class="base-timer__path-elapsed"
+                  cx="50"
+                  cy="50"
+                  r="45"
+                ></circle>
+                <path
+                  id="base-timer-path-remaining"
+                  stroke-dasharray="283"
+                  class="base-timer__path-remaining green"
+                  d="
+                  M 50, 50
+                  m -45, 0
+                  a 45,45 0 1,0 90,0
+                  a 45,45 0 1,0 -90,0
+                "
+                ></path>
+              </g>
+            </svg>
+            <span id="base-timer-label" class="base-timer__label"></span>
+          </div>
+          <div id="fullscreen">
+            <input
+              type="checkbox"
+              onclick="toggleFullscreen()"
+              id="fullscreen-toggler"
+            />
+            <label for="fullscreen-toggler">
+              <i class="fas fa-expand"></i>
+            </label>
+          </div>
+        </div>
+        <div id="test-nav"><div></div></div>
+        <div id="test-submit"><div></div></div>
+      </div>
+    </div>
+    <div id="modal-1" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <span class="close">&times;</span>
+          <h2>Result</h2>
+        </div>
+        <div class="modal-body">
+          <p id="correct-questions" style="color: green; font-weight: bold"></p>
+          <p id="incorrect-questions" style="color: red; font-weight: bold"></p>
+          <p
+            id="unattempted-questions"
+            style="color: blue; font-weight: bold"
+          ></p>
+          <p id="total-questions" style="font-weight: bold"></p>
+        </div>
+      </div>
+    </div>
+    <div id="modal-2" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <span class="close">&times;</span>
+          <h2>Instructions</h2>
+        </div>
+        <div class="modal-body"></div>
+      </div>
+    </div>
+    <script src="../static//js/scripts.js"></script>
+    <script src="../static/js/test.js"></script>
+  </body>
+</html>
