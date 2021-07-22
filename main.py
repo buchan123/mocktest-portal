@@ -22,6 +22,12 @@ def tests():
     return render_template("tests.html", email=current_user.name)
 
 
+@main_blueprint.route("/profile")
+@login_required
+def profile():
+    message = "Hi!{}".format(current_user.name)
+    return render_template("profile.html",message=message+",Profile under Construction Feel Free To Visit Other Pages!!")
+
 app = Flask(__name__)
 app.config['SESSION_TYPE'] = 'memcached'
 app.config['SECRET_KEY'] = 't1NP63m4wnBg6nyHYKfmc2TpCOGI4nss'
