@@ -22,17 +22,16 @@ def login():
         
         response = requests.post("https://mocktest-api.herokuapp.com/api/auth/login", json=payload)
         
-        if response.status_code == 401:
-            return render_template("index.html", message = "Wrong Username or Password")
+        if response.status_code == 200:
+            email = response.json()["email"]
+            _id = response.json()['id']
+            name = response.json()['name']
+            user = User(email,name,_id)
+
+            login_user(user, remember=remember)
+            return redirect(url_for('main.home'))
+        return render_template("index.html", message = "Wrong Username or Password")
         
-        email = response.json()["email"]
-        _id = response.json()['id']
-        name = response.json()['name']
-        user = User(email,name,_id)
-
-        login_user(user, remember=remember)
-        return redirect(url_for('main.home'))
-
 @auth.route('/logout') 
 @login_required
 def logout(): 
