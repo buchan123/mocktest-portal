@@ -36,7 +36,7 @@ def profile():
 app = Flask(__name__)
 app.config['SESSION_TYPE'] = 'memcached'
 app.config['SECRET_KEY'] = 't1NP63m4wnBg6nyHYKfmc2TpCOGI4nss'
-app.config['BASE_URL'] = "https://mocktest-api.herokuapp.com"
+app.config['BASE_URL'] = "https://mocktest-api-o77jx.ondigitalocean.app"
 
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'

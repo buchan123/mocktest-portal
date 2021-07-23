@@ -5,7 +5,7 @@ from models import User
 
 auth = Blueprint('auth', __name__) 
 config = {}
-config["BASE_URL"] = "https://mocktest-api.herokuapp.com"
+config["BASE_URL"] = "https://mocktest-api-o77jx.ondigitalocean.app"
 
 @auth.route('/login', methods=['GET', 'POST']) 
 def login(): 
