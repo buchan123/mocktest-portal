@@ -2,8 +2,8 @@ class Timer {
   constructor(TIME_LIMIT) {
     this.TIME_LIMIT = TIME_LIMIT;
     this.FULL_DASH_ARRAY = 283;
-    this.WARNING_THRESHOLD = 50;
-    this.ALERT_THRESHOLD = 15;
+    this.WARNING_THRESHOLD = this.TIME_LIMIT * 0.5;
+    this.ALERT_THRESHOLD = this.WARNING_THRESHOLD * 0.5;
 
     this.COLOR_CODES = {
       info: {
@@ -23,14 +23,13 @@ class Timer {
     this.timeLeft = this.TIME_LIMIT;
     this.timerInterval = null;
     this.remainingPathColor = this.COLOR_CODES.info.color;
-    this.onTimesUp();
   }
 
   onTimesUp() {
     clearInterval(this.timerInterval);
   }
 
-  startTimer(abc) {
+  startTimer(refSubmit) {
     this.timerInterval = setInterval(async () => {
       if (
         document
@@ -59,7 +58,7 @@ class Timer {
       this.setRemainingPathColor(this.timeLeft);
 
       if (this.timeLeft === 0) {
-        abc.submit();
+        refSubmit.submit();
         this.onTimesUp();
       }
     }, 1000);
@@ -193,17 +192,22 @@ class Question {
     promptElement.className = "question_prompt";
     questionContainer.appendChild(promptElement);
 
-    const gateYear = document.createElement("p");
-    gateYear.appendChild(document.createTextNode(this.gateYear));
-    gateYear.style.color = "green";
-    gateYear.className = "tags";
-    questionContainer.appendChild(gateYear);
+    const tagDiv = document.createElement("div");
+    tagDiv.id = "tag-div";
+
+    if (this.gateYear !== undefined) {
+      const gateYear = document.createElement("p");
+      gateYear.appendChild(document.createTextNode(this.gateYear));
+      gateYear.style.color = "green";
+      gateYear.className = "tags";
+      tagDiv.appendChild(gateYear);
+    }
 
     const subject = document.createElement("p");
     subject.appendChild(document.createTextNode(this.subject));
     subject.style.color = "red";
     subject.className = "tags";
-    questionContainer.appendChild(subject);
+    tagDiv.appendChild(subject);
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
@@ -223,7 +227,7 @@ class Question {
     flagIcon.classList = ["fa fa-flag"];
     flagLabel.appendChild(flagIcon);
     flagLabel.style.float = "right";
-    flagLabel.style.paddingTop = "20px";
+    flagLabel.style.paddingTop = "1.2em";
     flagLabel.addEventListener("click", (event) => {
       event.stopPropagation();
       if (flagLabel.firstChild.checked === true) {
@@ -232,15 +236,14 @@ class Question {
         this.flagged = false;
       }
     });
+    tagDiv.appendChild(flagLabel);
+    questionContainer.appendChild(tagDiv);
 
-    questionContainer.appendChild(flagLabel);
+    const optionsLabel = document.createElement("h4");
+    optionsLabel.appendChild(document.createTextNode("Options : "));
+    optionsLabel.className = "question_prompt";
+    questionContainer.appendChild(optionsLabel);
 
-    const questionLabel = document.createElement("h4");
-    questionLabel.appendChild(document.createTextNode("Options : "));
-    questionLabel.className = "question_prompt";
-    questionContainer.appendChild(questionLabel);
-
-    // creating the options
     const optionContainer = this.getOptionsDomNode();
     questionContainer.appendChild(optionContainer);
 
@@ -375,35 +378,37 @@ class Quiz {
     submitPos.firstElementChild.replaceWith(this.submitBtn);
   }
 
-  async showInstructions(questions, time) {
+  showInstructions(questions, time) {
     displayInstructionModal(questions, time);
     const questionsContainer = document.getElementById("test");
     document.getElementById("home-page-greeting").style.display = "none";
     questionsContainer.style.display = "none";
-    const startBtn = document.getElementById("test-start-btn");
+    const startBtnDiv = document.getElementById("test-start-div");
+    const startBtn = document.createElement("button");
+    startBtn.id = "test-start-btn";
+    startBtn.innerText = "Start Test";
     startBtn.addEventListener("click", (event) => {
       event.stopPropagation();
       document.getElementById("modal-2").style.display = "none";
       const questionsContainer = document.getElementById("test");
       questionsContainer.style.display = "grid";
-      return true;
+      this.timerObj.startTimer(this);
     });
+    startBtnDiv.firstElementChild.replaceWith(startBtn);
   }
 
   start() {
-    if (
-      this.showInstructions(
-        this.questions.length,
-        this.questions.length * this.questions[0].getTime()
-      )
-    ) {
-      this.timerObj.startTimer(this);
-      this.render();
-      const nav_dis = document.getElementsByClassName("disable-test");
-      for (const ele of nav_dis) {
-        ele.style.display = "none";
-      }
+    this.showInstructions(
+      this.questions.length,
+      this.questions.length * this.questions[0].getTime()
+    );
+
+    this.render();
+    const nav_dis = document.getElementsByClassName("disable-test");
+    for (const ele of nav_dis) {
+      ele.style.display = "none";
     }
+
     this.updateQuestionNav();
   }
 
