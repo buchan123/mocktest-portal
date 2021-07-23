@@ -445,10 +445,6 @@ class Quiz {
 }
 
 class BuildTest {
-  constructor() {
-    this.test;
-  }
-
   renderByTestIdOrNone = async (testId) => {
     const questionsDB = await fetch(BASE_URL + "/api/questions").then(
       (response) => response.json()
@@ -495,11 +491,9 @@ class BuildTest {
         }
       }
     }
-    if (this.test != undefined) {
-      this.test.timerObj.onTimesUp();
-    }
-    this.test = new Quiz(questionObjects, questionsDiv);
-    this.test.start();
+
+    const test = new Quiz(questionObjects, questionsDiv);
+    test.start();
   };
 
   renderBySubject = async (subject) => {
@@ -529,11 +523,9 @@ class BuildTest {
         );
       }
     }
-    if (this.test != undefined) {
-      this.test.timerObj.onTimesUp();
-    }
-    this.test = new Quiz(questionObjects, questionsDiv);
-    this.test.start();
+
+    const test = new Quiz(questionObjects, questionsDiv);
+    test.start();
   };
 
   renderByYears = async (gateYear) => {
@@ -564,11 +556,8 @@ class BuildTest {
       }
     }
 
-    if (this.test != undefined) {
-      this.test.timerObj.onTimesUp();
-    }
-    this.test = new Quiz(questionObjects, questionsDiv);
-    this.test.start();
+    const test = new Quiz(questionObjects, questionsDiv);
+    test.start();
   };
 
   start = async () => {
