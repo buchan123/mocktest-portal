@@ -57,3 +57,35 @@ function displayResultModal(correct, incorrect, unattempted, total) {
     }
   };
 }
+
+function displayInstructionModal(questions, time) {
+  let modal = document.getElementById("modal-2");
+  let span = document.getElementsByClassName("close")[1];
+  modal.style.display = "block";
+
+  document.getElementById("question-count").innerText =
+    "There are : " + questions + " Questions.";
+
+  document.getElementById("question-time").innerText =
+    "You'll be allowed " + time + " mins of time";
+
+  span.onclick = function () {
+    modal.style.display = "none";
+    document.getElementById("home-page-greeting").style.display = "block";
+    const nav_dis = document.getElementsByClassName("disable-test");
+    for (const ele of nav_dis) {
+      ele.style.display = "inline";
+    }
+  };
+
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+      document.getElementById("home-page-greeting").style.display = "block";
+      const nav_dis = document.getElementsByClassName("disable-test");
+      for (const ele of nav_dis) {
+        ele.style.display = "inline";
+      }
+    }
+  };
+}

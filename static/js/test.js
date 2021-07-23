@@ -2,8 +2,8 @@ class Timer {
   constructor(TIME_LIMIT) {
     this.TIME_LIMIT = TIME_LIMIT;
     this.FULL_DASH_ARRAY = 283;
-    this.WARNING_THRESHOLD = 10;
-    this.ALERT_THRESHOLD = 5;
+    this.WARNING_THRESHOLD = 50;
+    this.ALERT_THRESHOLD = 15;
 
     this.COLOR_CODES = {
       info: {
@@ -23,6 +23,7 @@ class Timer {
     this.timeLeft = this.TIME_LIMIT;
     this.timerInterval = null;
     this.remainingPathColor = this.COLOR_CODES.info.color;
+    this.onTimesUp();
   }
 
   onTimesUp() {
@@ -222,6 +223,7 @@ class Question {
     flagIcon.classList = ["fa fa-flag"];
     flagLabel.appendChild(flagIcon);
     flagLabel.style.float = "right";
+    flagLabel.style.paddingTop = "20px";
     flagLabel.addEventListener("click", (event) => {
       event.stopPropagation();
       if (flagLabel.firstChild.checked === true) {
@@ -297,52 +299,6 @@ class Quiz {
     return btn;
   }
 
-  disableBtnIfRequire() {
-    // this.i, this.prev, this.next
-    if (this.i <= 0) {
-      this.prevBtn.disabled = true;
-    } else {
-      this.prevBtn.disabled = false;
-    }
-
-    if (this.i + 1 >= this.questions.length) {
-      this.nextBtn.disabled = true;
-    } else {
-      this.nextBtn.disabled = false;
-    }
-  }
-
-  updateQuestionNav() {
-    const listArray = Array.from(this.questionsNav.children);
-    let index = 0;
-    listArray.forEach((item) => {
-      const q = this.questions[index];
-      if (q.submit === false) {
-        item.style.background = "whitesmoke";
-
-        if (q.isDone) {
-          item.style.background = "lightgreen";
-        }
-        if (q.flagged) {
-          item.style.background = "pink";
-        }
-        if (q.flagged && q.isDone) {
-          item.style.background = "lightblue";
-        }
-      }
-      index++;
-    });
-  }
-
-  updateQuestion(index) {
-    this.disableBtnIfRequire();
-    const q = this.questions[index];
-    this.i = index;
-    this.root.firstElementChild.replaceWith(q.getDOMNode(this.i + 1));
-    this.updateQuestionNav();
-    this.disableBtnIfRequire();
-  }
-
   getQuestionsNav() {
     const questionsNav = document.createElement("div");
     questionsNav.className = "questions-nav";
@@ -360,26 +316,103 @@ class Quiz {
     return questionsNav;
   }
 
+  disableBtnIfRequire() {
+    // this.i, this.prev, this.next
+    if (this.i <= 0) {
+      this.prevBtn.disabled = true;
+    } else {
+      this.prevBtn.disabled = false;
+    }
+
+    if (this.i + 1 >= this.questions.length) {
+      this.nextBtn.disabled = true;
+    } else {
+      this.nextBtn.disabled = false;
+    }
+  }
+
+  async updateQuestionNav(flag) {
+    const qNavBtns = Array.from(this.questionsNav.children);
+    let index = 0;
+    qNavBtns.forEach((item) => {
+      const q = this.questions[index];
+      item.style.background = "whitesmoke";
+      if (q.isDone) {
+        item.style.background = "lightgreen";
+      }
+      if (q.flagged) {
+        item.style.background = "pink";
+      }
+      if (q.flagged && q.isDone) {
+        item.style.background = "lightblue";
+      }
+      if (this.i === index) {
+        item.style.background = "lightsalmon";
+      }
+      index++;
+    });
+  }
+
+  async updateQuestion(index) {
+    this.disableBtnIfRequire();
+    const q = this.questions[index];
+    this.i = index;
+    this.root.firstElementChild.replaceWith(q.getDOMNode(this.i + 1));
+    this.updateQuestionNav();
+    this.disableBtnIfRequire();
+  }
+
   render() {
     this.disableBtnIfRequire();
     const q = this.questions[0];
     this.root.appendChild(q.getDOMNode(this.i + 1));
     this.root.appendChild(this.prevBtn);
     this.root.appendChild(this.nextBtn);
+
     const questNavPos = document.getElementById("test-nav");
     questNavPos.firstElementChild.replaceWith(this.questionsNav);
     const submitPos = document.getElementById("test-submit");
     submitPos.firstElementChild.replaceWith(this.submitBtn);
   }
 
+  async showInstructions(questions, time) {
+    displayInstructionModal(questions, time);
+    const questionsContainer = document.getElementById("test");
+    document.getElementById("home-page-greeting").style.display = "none";
+    questionsContainer.style.display = "none";
+    const startBtn = document.getElementById("test-start-btn");
+    startBtn.addEventListener("click", (event) => {
+      event.stopPropagation();
+      document.getElementById("modal-2").style.display = "none";
+      const questionsContainer = document.getElementById("test");
+      questionsContainer.style.display = "grid";
+      return true;
+    });
+  }
+
   start() {
-    this.render();
-    this.timerObj.startTimer(this);
+    if (
+      this.showInstructions(
+        this.questions.length,
+        this.questions.length * this.questions[0].getTime()
+      )
+    ) {
+      this.timerObj.startTimer(this);
+      this.render();
+      const nav_dis = document.getElementsByClassName("disable-test");
+      for (const ele of nav_dis) {
+        ele.style.display = "none";
+      }
+    }
+    this.updateQuestionNav();
   }
 
   submit() {
-    this.updateQuestionNav();
     this.timerObj.onTimesUp();
+    const nav_dis = document.getElementsByClassName("disable-test");
+    for (const ele of nav_dis) {
+      ele.style.display = "inline";
+    }
     let correct = 0;
     let incorrect = 0;
     let unattempted = 0;
@@ -399,6 +432,7 @@ class Quiz {
     }
     this.root.innerHTML = "";
     this.i = 0;
+    this.updateQuestionNav();
     this.render();
     this.submitBtn.disabled = true;
     displayResultModal(correct, incorrect, unattempted, this.questions.length);
@@ -411,9 +445,9 @@ class BuildTest {
   }
 
   renderByTestIdOrNone = async (testId) => {
-    const questionsDB = await fetch(
-      "https://mocktest-api.herokuapp.com/api/questions"
-    ).then((response) => response.json());
+    const questionsDB = await fetch(BASE_URL + "/api/questions").then(
+      (response) => response.json()
+    );
 
     const questionsDiv = document.getElementById("test-questions");
     questionsDiv.innerHTML = "";
@@ -423,9 +457,6 @@ class BuildTest {
     } else {
       testHead.innerText = testId;
     }
-
-    const questionsContainer = document.getElementById("test");
-    questionsContainer.style.display = "grid";
 
     const questionObjects = [];
     if (testId === undefined) {
@@ -467,16 +498,14 @@ class BuildTest {
   };
 
   renderBySubject = async (subject) => {
-    const questionsDB = await fetch(
-      "https://mocktest-api.herokuapp.com/api/questions"
-    ).then((response) => response.json());
+    const questionsDB = await fetch(BASE_URL + "/api/questions").then(
+      (response) => response.json()
+    );
 
     const questionsDiv = document.getElementById("test-questions");
     questionsDiv.innerHTML = "";
     const testHead = document.getElementById("test-head");
     testHead.innerText = subject;
-    const questionsContainer = document.getElementById("test");
-    questionsContainer.style.display = "grid";
 
     const questionObjects = [];
 
@@ -503,16 +532,14 @@ class BuildTest {
   };
 
   renderByYears = async (gateYear) => {
-    const questionsDB = await fetch(
-      "https://mocktest-api.herokuapp.com/api/questions"
-    ).then((response) => response.json());
+    const questionsDB = await fetch(BASE_URL + "/api/questions").then(
+      (response) => response.json()
+    );
 
     const questionsDiv = document.getElementById("test-questions");
     questionsDiv.innerHTML = "";
     const testHead = document.getElementById("test-head");
     testHead.innerText = gateYear;
-    const questionsContainer = document.getElementById("test");
-    questionsContainer.style.display = "grid";
 
     const questionObjects = [];
 
@@ -540,14 +567,13 @@ class BuildTest {
   };
 
   start = async () => {
-    const pageMetadata = await fetch(
-      "https://mocktest-api.herokuapp.com/api/metadata"
-    ).then((response) => response.json());
+    const pageMetadata = await fetch(BASE_URL + "/api/metadata").then(
+      (response) => response.json()
+    );
 
     // Creating Tests Options
     const tests = pageMetadata["tests"];
     const testOptions = document.getElementById("test-wise");
-
     for (const test of tests) {
       const t = document.createElement("a");
       t.innerText = test;
@@ -589,4 +615,5 @@ class BuildTest {
 }
 
 const obj = new BuildTest();
+const BASE_URL = "https://mocktest-api.herokuapp.com";
 obj.start();

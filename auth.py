@@ -1,10 +1,11 @@
 import requests
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, config, render_template, redirect, url_for, request, flash
 from flask_login import login_user, logout_user, login_required
 from models import User
 
 auth = Blueprint('auth', __name__) 
-
+config = {}
+config["BASE_URL"] = "https://mocktest-api.herokuapp.com"
 
 @auth.route('/login', methods=['GET', 'POST']) 
 def login(): 
@@ -20,7 +21,7 @@ def login():
                     "password": password
                 }
         
-        response = requests.post("https://mocktest-api.herokuapp.com/api/auth/login", json=payload)
+        response = requests.post(config["BASE_URL"]+"/api/auth/login", json=payload)
         
         if response.status_code == 200:
             email = response.json()["email"]
