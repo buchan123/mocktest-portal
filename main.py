@@ -1,3 +1,4 @@
+import os
 import requests
 from flask import Flask,Blueprint, render_template,url_for
 from werkzeug.utils import redirect
@@ -35,8 +36,8 @@ def profile():
 
 app = Flask(__name__)
 app.config['SESSION_TYPE'] = 'memcached'
-app.config['SECRET_KEY'] = 't1NP63m4wnBg6nyHYKfmc2TpCOGI4nss'
-app.config['BASE_URL'] = "https://mocktest-api-o77jx.ondigitalocean.app"
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+app.config['BASE_URL'] = os.environ.get('BASE_URL')
 
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
