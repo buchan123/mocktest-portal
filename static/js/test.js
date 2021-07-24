@@ -609,5 +609,5 @@ class BuildTest {
 }
 
 const obj = new BuildTest();
-const BASE_URL = "https://mocktest-api-o77jx.ondigitalocean.app";
+const BASE_URL = "https://mocktest-api-74v6x.ondigitalocean.app";
 obj.start();
