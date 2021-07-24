@@ -6,7 +6,7 @@ from models import User
 
 auth = Blueprint('auth', __name__) 
 config = {}
-config["BASE_URL"] = os.environ.get('BASE_URL')
+config["BASE_URL"] ="https://mocktest-api-74v6x.ondigitalocean.app"
 
 @auth.route('/login', methods=['GET', 'POST']) 
 def login(): 
