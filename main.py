@@ -36,8 +36,8 @@ def profile():
 
 app = Flask(__name__)
 app.config['SESSION_TYPE'] = 'memcached'
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
-app.config['BASE_URL'] = os.environ.get('BASE_URL')
+app.config['SECRET_KEY'] = "t1NP63m4wnBg6nyHYKfmc2TpCOGI4nss"
+app.config['BASE_URL'] = "https://mocktest-api-74v6x.ondigitalocean.app"
 
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
