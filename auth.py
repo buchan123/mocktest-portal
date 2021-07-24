@@ -1,11 +1,12 @@
 import requests
+import os
 from flask import Blueprint, config, render_template, redirect, url_for, request, flash
 from flask_login import login_user, logout_user, login_required
 from models import User
 
 auth = Blueprint('auth', __name__) 
 config = {}
-config["BASE_URL"] = "https://mocktest-api-o77jx.ondigitalocean.app"
+config["BASE_URL"] = os.environ.get('BASE_URL')
 
 @auth.route('/login', methods=['GET', 'POST']) 
 def login(): 
